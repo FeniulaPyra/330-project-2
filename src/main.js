@@ -10,7 +10,7 @@
 import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './canvas.js';
-
+import * as lib from "./lepLIB.js";
 
 // 1 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
@@ -23,7 +23,8 @@ let drawParams = {
 	showCircles: true,
 	showNoise: false,
 	showInvert: false,
-	showEmboss: false
+	showEmboss: false,
+	spin: true
 };
 
 function init(){
@@ -95,6 +96,7 @@ function setupUI(canvasElement){
 	let noiseCB = document.querySelector("#noiseCB");
 	let invertCB = document.querySelector("#invertCB");
 	let embossCB = document.querySelector("#embossCB");
+	let spinCB = document.querySelector("#spinCB");
 	
 	gradientCB.onchange = e => {
 		drawParams.showGradient = e.target.checked;
@@ -118,6 +120,10 @@ function setupUI(canvasElement){
 	
 	embossCB.onchange = e => {
 		drawParams.showEmboss = e.target.checked;
+	}
+	
+	spinCB.onchange = e => {
+		drawParams.spin = e.target.checked;
 	}
 	
 } // end setupUI

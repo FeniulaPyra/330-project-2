@@ -8,10 +8,12 @@
 */
 
 import * as utils from './utils.js';
+import * as lib from './lepLIB.js';
 
 let ctx,canvasWidth,canvasHeight,gradient,analyserNode,audioData;
 let colorstops = [];
-
+let startTheta = 0;
+let spinSpeed = .1;
 
 function setupCanvas(canvasElement,analyserNodeRef){
 	// create drawing context
@@ -27,7 +29,7 @@ function setupCanvas(canvasElement,analyserNodeRef){
 	
 	// create a gradient that runs top to bottom
 
-	gradient = utils.getLinearGradient(ctx,0,0,0,canvasHeight,[{percent: 0, color: "aqua"}, {percent: 1, color: "blue"}]);//[{percent:0,color:"blue"},{percent:.25,color:"green"},{percent:.5,color:"yellow"},{percent:.75,color:"red"},{percent:1,color:"magenta"}]);
+	gradient = utils.getLinearGradient(ctx,0,0,0,canvasHeight,[{percent: .3, color: "black"}, {percent:.5, color:"darkblue"} ,{percent: .7, color: "black"}]);//[{percent:0,color:"blue"},{percent:.25,color:"green"},{percent:.5,color:"yellow"},{percent:.75,color:"red"},{percent:1,color:"magenta"}]);
 }
 
 function draw(params={}){
@@ -54,6 +56,7 @@ function draw(params={}){
 	
 	// 3 - draw gradient
 	if(params.showGradient) {
+		
 		ctx.save();
 		ctx.fillStyle = gradient;
 		ctx.globalAlpha = .3;//params.emboss ? 1 : .3;
@@ -63,6 +66,7 @@ function draw(params={}){
 	
 	// 4 - draw bars
 	if(params.showBars) {
+		
 		let barSpacing = 4;
 		let margin = 5;
 		let screenWidthForBars = canvasWidth - (audioData.length * barSpacing) - margin * 2;
@@ -71,9 +75,9 @@ function draw(params={}){
 		let topSpacing = 100;
 		
 		ctx.save();
-		ctx.fillStyle = "rgba(0,255,0,.5)";
-		ctx.strokeStyle = "rgba(0,255, 0,.5)";
 		for(let i = 0; i < audioData.length; i++) {
+			ctx.fillStyle = `rgba(0,150,0,${audioData[i]/255})`;
+			ctx.strokeStyle = `rgba(0,150,0,${audioData[i]/255})`;
 			ctx.fillRect(
 				margin + i * (barWidth + barSpacing),
 				topSpacing + 256 - audioData[i],
@@ -88,12 +92,14 @@ function draw(params={}){
 			);
 		}
 		ctx.restore();
+
+		
 	}
 	
-	
+	startTheta = startTheta >= Math.PI*2 ? 0 : startTheta+(Math.PI/180 * lepLIB.averageIntArray(audioData)/255);
 	// 5 - draw circles
 	if(params.showCircles) {
-		let maxRadius = canvasHeight/4;
+		/*let maxRadius = canvasHeight/4;
 		ctx.save();
 		ctx.globalAlpha = .5;
 		
@@ -122,7 +128,58 @@ function draw(params={}){
 			ctx.closePath();
 			ctx.restore();
 		}
-		ctx.restore();
+		ctx.restore();*/
+		
+		//WIP, currently causes an infinite loop.
+		/*lepLIB.drawPhyllotaxis(
+			ctx,
+			canvasWidth/2,
+			canvasHeight/2,
+			lepLIB.averageIntArray(audioData, 8, 0)/255 * 200,
+			lepLIB.averageIntArray(audioData, 8, 1)/255 * 8,
+			lepLIB.averageIntArray(audioData, 8, 2)/255 * 2,
+			lepLIB.averageIntArray(audioData, 8, 3)/255 * .1,
+			lepLIB.averageIntArray(audioData, 8, 4)/255 * 36,
+			lepLIB.averageIntArray(audioData, 8, 5),
+			lepLIB.averageIntArray(audioData, 8, 6),
+			lepLIB.averageIntArray(audioData, 8, 7)
+		);*/
+		
+		//let startTheta = 0;
+		for(let i = 0; i < audioData.length; i+=8) {
+			let centerX = canvasWidth/2;
+			let centerY = canvasHeight/2;
+			let x = i/audioData.length * canvasWidth + 100;
+			let y = canvasHeight-audioData[i]/255*(canvasHeight-100);
+			
+			if(params.spin){
+				if(i == 0) {
+					x = centerX
+					y = centerY;
+				}
+				else {
+					let theta = -(i)/(audioData.length-8) * 2 * Math.PI + startTheta;
+					let r = 150;
+					x = r*Math.cos(theta) + centerX;
+					y = r*Math.sin(theta) + centerY;
+
+				}
+			}
+
+			
+			let maxN = audioData[i]/255 * 200;
+			let dotSize = audioData[i+2]/255 * 2 + .5;
+			
+			let dotSpacing = audioData[i+1]/255 * 8;
+
+			let dotDensity = audioData[i+3]/255 * .2;
+			let divergence = audioData[i+4]/255 * 24;// * 10;
+			let h = audioData[i+5];
+			let s = audioData[i+6];
+			let l = audioData[i+7];
+			lepLIB.drawPhyllotaxis(ctx, x, y, maxN, dotSpacing, dotSize, dotSize, dotDensity, divergence,h,s,l);
+
+		}
 	}
 	
 	// 6 - bitmap manipulation
