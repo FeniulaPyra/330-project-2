@@ -17,14 +17,16 @@ const DEFAULTS = Object.freeze({
 	sound1  :  "media/obama-oilspill.mp3"
 });
 
-let drawParams = {
+let drawParams = {/*
 	showGradient: true,
 	showBars: true,
 	showCircles: true,
 	showNoise: false,
 	showInvert: false,
 	showEmboss: false,
-	spin: true
+	spin: true,
+	showWave: true,*/
+	showCauldron: true
 };
 
 function init(){
@@ -58,10 +60,12 @@ function setupUI(canvasElement){
 
 		if(e.target.dataset.playing == "no") {
 			audio.playCurrentSound();
+			canvas.setPlaying(true);
 			e.target.dataset.playing = "yes";
 		}
 		else {
 			audio.pauseCurrentSound();
+			canvas.setPlaying(false);
 			e.target.dataset.playing = "no";
 		}
 	};
@@ -79,25 +83,27 @@ function setupUI(canvasElement){
 	
 	//hook up track select
 	let trackSelect = document.querySelector("#trackSelect");
+
 	
 	//adds onchange event to select
 	trackSelect.onchange = e => {
 		audio.loadSoundFile(e.target.value);
-		
 		//pause current track
 		if(playButton.dataset.playing = "yes") {
 			playButton.dispatchEvent(new MouseEvent("click"));
 		}
 	}
-	
+	/*
 	let gradientCB = document.querySelector("#gradientCB");
 	let barsCB = document.querySelector("#barsCB");
 	let circlesCB = document.querySelector("#circlesCB");
 	let noiseCB = document.querySelector("#noiseCB");
 	let invertCB = document.querySelector("#invertCB");
 	let embossCB = document.querySelector("#embossCB");
-	let spinCB = document.querySelector("#spinCB");
+	let spinCB = document.querySelector("#spinCB");*/
+	let cauldronCB = document.querySelector("#cauldronCB");
 	
+	/*
 	gradientCB.onchange = e => {
 		drawParams.showGradient = e.target.checked;
 	}
@@ -124,6 +130,10 @@ function setupUI(canvasElement){
 	
 	spinCB.onchange = e => {
 		drawParams.spin = e.target.checked;
+	}
+*/
+	cauldronCB.onchange = e => {
+		drawParams.showCauldron = e.target.checked;
 	}
 	
 } // end setupUI

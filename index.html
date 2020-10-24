@@ -8,7 +8,7 @@
 </head>
 <body>
 <main>
-	<canvas width="800" height="400"></canvas>
+	<canvas width="640" height="640"></canvas>
 	<div id="controls">
 		<section>
 			<button id="playButton" data-playing="no"></button>
@@ -18,7 +18,8 @@
 				<select id="trackSelect">
 					<option value="media/obama-oilspill.mp3" selected>Obama Speech</option>
 					<option value="media/human-voice.mp3">Human Voice</option>
-					<!---option value="media/sb-haiku.mp3">haiku</option--->
+					<option value="media/sb-haiku.mp3">haiku</option>
+					<option value="media/arctic-battle-1.mp3">arctic battle 1</option>
 					<!--option value="media/The Picard Song.mp3">The Picard Song</option-->
 				</select>
 			</label>
@@ -27,16 +28,25 @@
 		<section>
 			Volume: <input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
 			<span id="volumeLabel">???</span>
-			  <span><input type="checkbox" id="gradientCB" checked><label for="gradientCB">Show Gradient</label></span>
-			  <span><input type="checkbox" id="barsCB" checked><label for="barsCB">Show Bars</label></span>
-			  <span><input type="checkbox" id="circlesCB" checked><label for="circlesCB">Show Phyllotaxis</label></span>
-			  <!-- we'll use this 4th checkbox soon! -->
-			  <span><input type="checkbox" id="noiseCB"><label for="noiseCB">Show Noise</label></span>
-			  <span><input type="checkbox" id="invertCB"><label for="invertCB">Show Inversion</label></span>
-			  <span><input type="checkbox" id="embossCB"><label for="embossCB">Show Emboss</label></span>
-			  <span><input type="checkbox" id="spinCB" checked><label for="spinCB">Spin Phyllotaxis</label></span>
+				<!---span><input type="checkbox" id="gradientCB" checked><label for="gradientCB">Show Gradient</label></span>
+				<span><input type="checkbox" id="barsCB" checked><label for="barsCB">Show Bars</label></span>
+				<span><input type="checkbox" id="circlesCB" checked><label for="circlesCB">Show Phyllotaxis</label></span>
+				<!-- we'll use this 4th checkbox soon! >
+				<span><input type="checkbox" id="noiseCB"><label for="noiseCB">Show Noise</label></span>
+				<span><input type="checkbox" id="invertCB"><label for="invertCB">Show Inversion</label></span>
+				<span><input type="checkbox" id="embossCB"><label for="embossCB">Show Emboss</label></span>
+				<span><input type="checkbox" id="spinCB" checked><label for="spinCB">Spin Phyllotaxis</label></span>
+				<span><input type="checkbox" id="waveCB" checked><label for="waveCB">Show Wave</label></span-->
+				<span><input type="checkbox" id="cauldronCB" checked><label for="cauldronCB">Show Cauldron</label></span>
+				
 		</section>
 	</div>
+	<img src="media/cloud.png" style="display: none" id="cloud">
+	<img src="media/cauldron-static-parts.png" style="display: none" id="scene">
+	<img src="media/cauldron-swirl.png" style="display: none" id="swirl">
+	<img src="media/cauldron.png" style="display: none" id="cauldron">
+	<img src="media/note.png" style="display: none" id="note">
+	
 </main>
 </body>
 </html>

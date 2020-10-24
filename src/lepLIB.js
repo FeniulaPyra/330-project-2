@@ -1,6 +1,10 @@
 (function() {
 	
 'use strict'
+
+let phylloMAXis = {
+	maxN: 100
+}
 	
 let c = 1;
 let divergence = 137.5;
@@ -190,7 +194,9 @@ let lepLIB = {
 	*/
 	
 	//all parameters should be percent numbers between 1 and 100.
-	drawPhyllotaxis(ctx, centerX, centerY, maxN, dotSpacing, innerDotSize, outerDotSize, dotDensity, divergence,h,s,l) {
+	drawPhyllotaxis(ctx, centerX, centerY, maxN, dotSpacing, innerDotSize, outerDotSize, dotDensity, divergence,h,s,l,a=1, overRideMaxes = false, draw = true) {
+		
+		let points = [];
 		
 		//let n = 0;
 		//let c = 4; dotSpacing
@@ -201,40 +207,76 @@ let lepLIB = {
 		//let fps = 120;
 		
 		//let divergence = -137.6;
+		if(!overRideMaxes) {
+			if(maxN > phylloMAXis.maxN) {
+				maxN = phylloMAXis.maxN;
+			}
+		}
+		let sizeDifference = innerDotSize - outerDotSize;
 		
 		// each frame draw a new dot
 		for(let n = 0; n < maxN; n++) {
 			// `a` is the angle
 			// `r` is the radius from the center (e.g. "Pole") of the flower
 			// `c` is the "padding/spacing" between the dots
-			let a = n * dtr(divergence);
+			let a = n * lepLIB.dtr(divergence);
 			let r = dotSpacing * Math.sqrt(n);
 
 			let x = r * Math.cos(a) + centerX; //anvasWidth/2;
 			let y = r * Math.sin(a) + centerY; //anvasHeight/2;
 
 			let aDegrees = (n * divergence) % 361;
-			let color = `hsl(${h*360/255},${s/255 * 50 + 50}%,${l/255 * 30 + 35}%)`;
+			let color = `hsl(${h*360/255},${s/255 * 50 + 50}%,${l/255 * 30 + 35}%, ${a})`;
 
 			//let color = `rgb(${n % 256},0,255)`;
-			lepLIB.drawCircle(ctx,x,y,innerDotSize,color);
-
+			if(draw) lepLIB.drawCircle(ctx,x,y,innerDotSize,color);
+			points.push({x:x, y:y});
+			
 			//n++;
 			maxN += dotDensity;
+			//console.log("n: " + n);
+			//console.log("maxN: " +maxN);
+			//console.log("density: " + dotDensity);
 		}
-		function dtr(degrees){
-			return degrees * (Math.PI/180);
-		}
+		return points;
 		
 	},
+	dtr(degrees){
+		return degrees * (Math.PI/180);
+	},
+	
 	averageIntArray(array, step = 1, start = 0) {
 		let sum = 0;
-		for(let i = start; i < array.length; i+=step) {
+		let i = start;
+		for(i = start; i < array.length; i+=step) {
 			sum += array[i];
+			if(array[i] == 0 && array[i+1] == 0 && array[i-1] == 0){
+				//break;
+			}
 		}
-		return sum/array.length;
+		
+		return sum/(i/step);
+	},
+	averageOfIntArraySquared(array) {
+		let newArray = [];
+		for(let i = 0; i < array.length; i++) {
+			newArray[i] = Math.pow(array[i], 2);
+		}
+		return lepLIB.averageIntArray(newArray);
+	},
+	probabilityDensity(x, avg, deviation){//, scale) {
+		//let x = audioData[i]; //current audiodata value
+
+		//i split up the equation for readability
+		let exponent = (-1/2)*Math.pow(((x-avg/*avgAudioData*/)/deviation),2);
+		let partE = Math.pow(Math.E, exponent);
+
+		let fraction = 1/(deviation*Math.sqrt(2*Math.PI));
+
+
+		let cdf = fraction * partE;//*scale;// * 1000;
+		return cdf;
 	}
-	
 };
 	
 if(window) {
