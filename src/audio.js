@@ -4,7 +4,7 @@ let audioCtx;
 
 // **These are "private" properties - these will NOT be visible outside of this module (i.e. file)**
 // 2 - WebAudio nodes that are part of our WebAudio audio routing graph
-let element, sourceNode, analyserNode, gainNode;
+let element, sourceNode, filterNode, analyserNode, gainNode;
 
 // 3 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
@@ -35,6 +35,8 @@ function setupWebaudio(filePath) {
 // 4 - create an a source node that points at the <audio> element
 	sourceNode = audioCtx.createMediaElementSource(element);
 
+	filterNode = audioCtx.createBiquadFilter();
+	
 // 5 - create an analyser node
 // note the UK spelling of "Analyser"
 	analyserNode = audioCtx.createAnalyser();
@@ -78,7 +80,28 @@ function setVolume(value) {
 	gainNode.gain.value = value;
 }
 // make sure that it's a Number rather than a String
+function setFilter(value) {
+	if(value != "none") {
+		filterNode.type = value;
+		sourceNode.disconnect(analyserNode);
+		sourceNode.connect(filterNode);
+		filterNode.connect(analyserNode);
+	}else {
+		sourceNode.disconnect(filterNode);
+		filterNode.disconnect(analyserNode);
+		sourceNode.connect(analyserNode);
+	}
+}
 
+function setProgress(value) {
+	if(value >= 0 && value <= element.duration)
+		element.currentTime = value;
+}
+function getProgress() {
+	return element.currentTime;
+}
+function getDuration() {
+	return element.duration;
+}
 
-
-export {audioCtx, setupWebaudio, playCurrentSound, pauseCurrentSound, loadSoundFile, setVolume, analyserNode };
+export {audioCtx, setupWebaudio, playCurrentSound, pauseCurrentSound, loadSoundFile, setVolume, analyserNode, setFilter, setProgress, getProgress, getDuration,element };

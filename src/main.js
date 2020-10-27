@@ -14,41 +14,57 @@ import * as lib from "./lepLIB.js";
 
 // 1 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
-	sound1  :  "media/obama-oilspill.mp3"
+	sound1  :  "media/new-adventure.mp3"
 });
 
-let drawParams = {/*
-	showGradient: true,
-	showBars: true,
-	showCircles: true,
-	showNoise: false,
-	showInvert: false,
+let drawParams = {
 	showEmboss: false,
-	spin: true,
-	showWave: true,*/
-	showCauldron: true
+	showInvert: false,
+	//showCauldron: true,
+	showFlowers: true,
+	showPotion: true,
+	showNotes: true,
+	showClouds: true,
+	colorHighlight: "none",
+	numBits: 5
 };
+
+let audioElement;
+let progressIndicator;
 
 function init(){
 	console.log("init called");
 	console.log(`Testing utils.getRandomColor() import: ${utils.getRandomColor()}`);
 	audio.setupWebaudio(DEFAULTS.sound1);
 	let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
-	
+	audioElement = document.querySelector("audio");
+	progressIndicator = document.querySelector("#progressIndicator");
+
 	setupUI(canvasElement);
 	canvas.setupCanvas(canvasElement, audio.analyserNode);
 	loop();
 }
 
 function setupUI(canvasElement){
-  // A - hookup fullscreen button
-  const fsButton = document.querySelector("#fsButton");
+	const fsButton = document.querySelector("#fsButton");
+	let invertCB = document.querySelector("#invertCB");
+	let embossCB = document.querySelector("#embossCB");
+	//let cauldronCB = document.querySelector("#cauldronCB");
+	let flowersCB = document.querySelector("#flowersCB");
+	let potionCB = document.querySelector("#potionCB");
+	let notesCB = document.querySelector("#notesCB");
+	let cloudsCB = document.querySelector("#cloudsCB");
+	let highlightDD = document.querySelector("#highlightDD");
+	let bitsRange = document.querySelector("#bits");
+	let audioFilter = document.querySelectorAll("input[type='radio'][name='distortionRB']");
+	let dropbox = document.querySelector("#dropbox");
 	
-  // add .onclick event to button
-  fsButton.onclick = e => {
-    console.log("init called");
-    utils.goFullscreen(canvasElement);
-  };
+	
+  	// add .onclick event to button
+	fsButton.onclick = e => {
+		console.log("init called");
+		utils.goFullscreen(canvasElement);
+	};
 	
 	playButton.onclick = e => {
 		console.log(`audioCtx.state before = ${audio.audioCtx.state}`);
@@ -60,12 +76,10 @@ function setupUI(canvasElement){
 
 		if(e.target.dataset.playing == "no") {
 			audio.playCurrentSound();
-			canvas.setPlaying(true);
 			e.target.dataset.playing = "yes";
 		}
 		else {
 			audio.pauseCurrentSound();
-			canvas.setPlaying(false);
 			e.target.dataset.playing = "no";
 		}
 	};
@@ -88,91 +102,120 @@ function setupUI(canvasElement){
 	//adds onchange event to select
 	trackSelect.onchange = e => {
 		audio.loadSoundFile(e.target.value);
+		progressIndicator.setAttribute("max", audio.getDuration());
+		
 		//pause current track
 		if(playButton.dataset.playing = "yes") {
 			playButton.dispatchEvent(new MouseEvent("click"));
 		}
 	}
-	/*
-	let gradientCB = document.querySelector("#gradientCB");
-	let barsCB = document.querySelector("#barsCB");
-	let circlesCB = document.querySelector("#circlesCB");
-	let noiseCB = document.querySelector("#noiseCB");
-	let invertCB = document.querySelector("#invertCB");
-	let embossCB = document.querySelector("#embossCB");
-	let spinCB = document.querySelector("#spinCB");*/
-	let cauldronCB = document.querySelector("#cauldronCB");
+	trackSelect.dispatchEvent(new Event("change"));
 	
-	/*
-	gradientCB.onchange = e => {
-		drawParams.showGradient = e.target.checked;
+	//skips the part where chrome opens it in another tab
+	dropbox.ondragover = e => {
+		e.target.innerHTML = "drop here!";
+		e.preventDefault();
 	}
 	
-	barsCB.onchange = e => {
-		drawParams.showBars = e.target.checked;
+	//when a song is dropped into the drop box, load it.
+	dropbox.ondrop = e => {
+		e.preventDefault();
+
+		//makes sure the file is a valid sound file type
+		if(!e.dataTransfer.files[0].type.includes("audio")) {
+			e.target.innerHTML = "Not a sound file!";
+			return;
+		}
+		
+		let reader = new FileReader();
+		
+		//when the file is read, the file is loaded into the audio element
+		reader.onload = e => {
+			audio.loadSoundFile(reader.result);
+		}
+		
+		//reads the file
+		reader.readAsDataURL(e.dataTransfer.files[0]);
+		
+		//shows name of song file
+		e.target.innerHTML = e.dataTransfer.files[0].name;
+		
+		//progress bar reflects song length
+		progressIndicator.setAttribute("max", audio.getDuration());
+		
+		//pause current track
+		if(playButton.dataset.playing = "yes") {
+			playButton.dispatchEvent(new MouseEvent("click"));
+		}
 	}
 	
-	circlesCB.onchange = e => {
-		drawParams.showCircles = e.target.checked;
-	}
-	
-	noiseCB.onchange = e => {
-		drawParams.showNoise = e.target.checked;
-	}
-	
+	//hook up visual effects to their ui elements
 	invertCB.onchange = e => {
 		drawParams.showInvert = e.target.checked;
 	}
-	
 	embossCB.onchange = e => {
 		drawParams.showEmboss = e.target.checked;
 	}
-	
-	spinCB.onchange = e => {
-		drawParams.spin = e.target.checked;
+	bitsRange.onchange = e => {
+		console.log("change bits");
+		drawParams.numBits = parseInt(e.target.value);
 	}
-*/
-	cauldronCB.onchange = e => {
-		drawParams.showCauldron = e.target.checked;
+	for(let filter of audioFilter) {
+		filter.onclick = e => {
+			if(e.target.checked)	
+				audio.setFilter(e.target.value);
+		}
+	}
+
+	//allow enabling/disabling of various parts of the scene
+	flowersCB.onchange = e => {
+		drawParams.showFlowers = e.target.checked;
+	}
+	potionCB.onchange = e => {
+		drawParams.showPotion = e.target.checked;
+	}
+	notesCB.onchange = e => {
+		drawParams.showNotes = e.target.checked;
+	}
+	cloudsCB.onchange = e => {
+		drawParams.showClouds = e.target.checked;
+	}
+	highlightDD.onchange = e => {
+		drawParams.colorHighlight = e.target.value;
+	}
+	
+	//progress bar seeks through the song
+	progressIndicator.onchange = e => {
+		audio.setProgress(parseInt(e.target.value));
+	}
+	
+	//makes progress bar reflect progress thru song
+	audio.element.ontimeupdate = e => {
+		progressIndicator.value = audio.getProgress();
+	}
+	
+	//displays all of the info about the song (i.e. song duration) once the song has been loaded.
+	audio.element.oncanplay = e => {
+		let durMinutes = Math.floor(audio.getDuration()/60);
+		let durSeconds = Math.floor(audio.getDuration() - durMinutes*60);
+		progressIndicator.nextElementSibling.innerHTML = `${durMinutes}:${durSeconds}`;
+		progressIndicator.setAttribute("max", audio.getDuration());
 	}
 	
 } // end setupUI
 
 function loop(){
-/* NOTE: This is temporary testing code that we will delete in Part II */
+	//draws the canvas stuff
 	requestAnimationFrame(loop);
 	canvas.draw(drawParams);
 	
-
-	//only outputs if the sound is playing
-	//if(playButton.dataset.playing = "no") return;
-	
-	// 1) create a byte array (values of 0-255) to hold the audio data
-	// normally, we do this once when the program starts up, NOT every frame
-	let audioData = new Uint8Array(audio.analyserNode.fftSize/2);
-	
-	// 2) populate the array of audio data *by reference* (i.e. by its address)
-	audio.analyserNode.getByteFrequencyData(audioData);
-	
-	// 3) log out the array and the average loudness (amplitude) of all of the frequency bins
-	
-	/*
-	console.log(audioData);
+	//seperates song completion into minutes and seconds so it looks pretty in the ui
+	let minutes = Math.floor(audio.getProgress()/60);
+	let seconds = Math.floor(audio.getProgress() - minutes*60);
 		
-	console.log("-----Audio Stats-----");
-	let totalLoudness =  audioData.reduce((total,num) => total + num);
-	let averageLoudness =  totalLoudness/(audio.analyserNode.fftSize/2);
-	let minLoudness =  Math.min(...audioData); // ooh - the ES6 spread operator is handy!
-	let maxLoudness =  Math.max(...audioData); // ditto!
-	// Now look at loudness in a specific bin
-	// 22050 kHz divided by 128 bins = 172.23 kHz per bin
-	// the 12th element in array represents loudness at 2.067 kHz
-	let loudnessAt2K = audioData[11]; 
-	console.log(`averageLoudness = ${averageLoudness}`);
-	console.log(`minLoudness = ${minLoudness}`);
-	console.log(`maxLoudness = ${maxLoudness}`);
-	console.log(`loudnessAt2K = ${loudnessAt2K}`);
-	console.log("---------------------");*/
+	//puts the minutes and seconds into the ui
+	progressIndicator.previousElementSibling.innerHTML = `${minutes}:${seconds}`;
+
 }
 
 

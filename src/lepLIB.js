@@ -264,6 +264,7 @@ let lepLIB = {
 		}
 		return lepLIB.averageIntArray(newArray);
 	},
+	//was gonna do some fun stuff, but, alas, it didn't really make any sense, visually.
 	probabilityDensity(x, avg, deviation){//, scale) {
 		//let x = audioData[i]; //current audiodata value
 
