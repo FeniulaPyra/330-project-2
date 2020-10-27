@@ -1,18 +1,37 @@
+* {
+	font-family: monospace;
+}
+
+
 body {
-	background: #eeeeee;
-	font-family: tahoma, verdana, sans serif;
+	background: black;
+	font-family: monospace;/*tahoma, verdana, sans serif;*/
+	color: mediumblue;
+	font-size: 1.25em;
+}
+
+main {
+	display:  grid;
+	grid-template-columns: 1fr 1fr;
 }
 
 canvas {
-	margin-left: 1rem;
+	margin: auto;
+	/*margin-left: 1rem;
 	margin-top: 1rem;
-	margin-bottom: 1rem;
-	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-	background: #fafafa;
+	margin-bottom: 1rem;*/
+	/*box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+	background: #fafafa;*/
 }
 
+h1 {
+	text-align: center;
+}
 #controls{
   margin-left: 1rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
 }
 
 #volumeLabel{
@@ -28,6 +47,23 @@ section{
   width: 6rem;
 }
 
+button {
+	color: black;
+	background: mediumblue;
+	outline-style: outset;
+	outline-color: blue;
+	cursor: pointer;
+	border: none;
+}
+
+button:hover {
+	background: darkblue;
+	outline-color: mediumblue;
+}
+
+input, label, select, option {
+	cursor: pointer;
+}
 button[data-playing="yes"]:after{
   content: "Pause";
 }
@@ -39,4 +75,29 @@ button[data-playing="no"]:after{
 #fsButton{
   font-size: 1.2rem;
   width: 8rem;
+}
+
+section {
+	display:flex;
+	flex-direction: column;
+}
+
+section * {
+	margin: .5rem;
+}
+
+#dropbox {
+	align-self:center;
+	color: black;
+	background: mediumblue;
+	padding: 3rem;
+	width: 10em;
+	/*height: 5em;*/
+}
+h2 {
+	text-align: center;
+	border-bottom: 1px solid blue;
+	margin: auto;
+	margin-top: 0;
+	margin-bottom: 0;
 }

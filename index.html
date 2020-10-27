@@ -7,36 +7,59 @@
 	<script src="./src/loader.js" type="module"></script>
 </head>
 <body>
+	<h1>Witchy Pixel Audio Visualizer</h1>
 <main>
 	<canvas width="640" height="640"></canvas>
 	<div id="controls">
-		<section>
-			<button id="playButton" data-playing="no"></button>
-			<button id="fsButton">Full Screen</button>
+		<section id="basiccontrols">
+			<h2>Controls:</h2>
+			
+			
+			<div id="dropbox">
+				drop a sound file to play here!
+			</div>
+			
 		
-			<label>Track: 
+			<label>Default Tracks: 
 				<select id="trackSelect">
 					<option value="media/new-adventure.mp3" selected>New Adventure Theme</option>
 					<option value="media/peanuts.mp3">Peanuts Theme</option>
 					<option value="media/picard.mp3">Picard Song</option>
 				</select>
 			</label>
+			<span><button id="playButton" data-playing="no"></button><label for="progressIndicator"></label><input type="range" id="progressIndicator" min=0 max=0 step=.01><label for="progressIndicator"></label></span>
+			
+			<span>
+				Volume: <input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
+				<span id="volumeLabel">???</span>
+			</span>
+			
+		</section>	
+		<section id="soundmanip">
+			<h2>Audio Filters:</h2>
+			<!---Sound Manipulation--->
+			<span><input type="radio" name="distortionRB" value="none" id="none" checked><label for="none">None</label></span>
+			<span><input type="radio" name="distortionRB" value="notch" id="notch"><label for="notch">Notch</label></span>
+			<span><input type="radio" name="distortionRB" value="bandpass" id="bandpass"><label for="bandpass">Band Pass</label></span>
+			<span><input type="radio" name="distortionRB" value="lowpass" id="lowpass"><label for="lowpass">Bass</label></span>
+			<span><input type="radio" name="distortionRB" value="highpass" id="highpass"><label for="highpass">Treble</label></span>
 		</section>
-		
-		<section>
-			Volume: <input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
-			<span id="volumeLabel">???</span>
-
+		<section id="visualtoggles">
+			<h2>Visuals:</h2>
 			<span><input type="checkbox" id="cloudsCB" checked><label for="cloudsCB">Show Clouds</label></span>
 			<span><input type="checkbox" id="flowersCB" checked><label for="flowersCB">Show Flowers</label></span>
 			<span><input type="checkbox" id="notesCB" checked><label for="notesCB">Show Notes</label></span>
 			<span><input type="checkbox" id="potionCB" checked><label for="potionCB">Show Potion Pulsing</label></span>
-			
+			<button id="fsButton">Full Screen</button>
+		</section>
+		<section id="visualmanip">
+			<h2>Image Effects:</h2>
 			<!---Image manipulation--->
 			<span><input type="checkbox" id="embossCB"><label for="embossCB">Emboss</label></span>
 			<span><input type="checkbox" id="invertCB"><label for="invertCB">Invert</label></span>
 			<span>
-				<select name="Color Effects:" id="highlightDD">
+				<label for="highlightDD">Color Filter:</label>
+				<select name="coloreffects" id="highlightDD">
 					<option value="none">None</option>
 					<option value="red">Red</option>
 					<option value="green">Green</option>
@@ -45,25 +68,11 @@
 				</select>
 			</span>
 			<span><label for="bits">Color Bits:</label><input type="range" min=1 max=100 step=1 id="bits" value=5></span>
-			
-			<!---Sound Manipulation--->
-			<span><input type="radio" name="distortionRB" value="none" checked>None</span>
-			<span><input type="radio" name="distortionRB" value="notch">Notch</span>
-			<span><input type="radio" name="distortionRB" value="bandpass">Band Pass</span>
-			<span><input type="radio" name="distortionRB" value="lowpass">Bass</span>
-			<span><input type="radio" name="distortionRB" value="highpass">Treble</span>
-			
-			<span><label for="progressIndicator"></label><input type="range" id="progressIndicator" min=0 max=0 step=.01><label for="progressIndicator"></label></span>
-		</section>
+		</section>	
 	</div>
 	
 	
 	
-	<img src="media/cloud.png" style="display: none" id="cloud">
-	<img src="media/cauldron-static-parts.png" style="display: none" id="scene">
-	<img src="media/cauldron-swirl.png" style="display: none" id="swirl">
-	<img src="media/cauldron.png" style="display: none" id="cauldron">
-	<img src="media/note.png" style="display: none" id="note">
 	
 	<div style="display: none; width: 0; height: 0">
 		<!---
@@ -82,6 +91,12 @@ three canvases stacked on top of each other, the back one being the sky, clouds,
 etc, the middle one being the potion canvas, and the top one being the cauldron.
 
 		--->
+		<img src="media/cloud.png" style="display: none" id="cloud">
+		<img src="media/cauldron-static-parts.png" style="display: none" id="scene">
+		<img src="media/cauldron-swirl.png" style="display: none" id="swirl">
+		<img src="media/cauldron.png" style="display: none" id="cauldron">
+		<img src="media/note.png" style="display: none" id="note">
+	
 		<canvas id="noteCanvas">
 		</canvas>
 		<canvas id="bgCanvas">
@@ -89,9 +104,7 @@ etc, the middle one being the potion canvas, and the top one being the cauldron.
 		<canvas id="cauldronCanvas">
 		</canvas>
 	</div>
-	<div id="dropbox" style="width: 30em; height: 30em; background:pink">
-		drop a sound file to play here!
-	</div>
+	
 	
 </main>
 </body>
